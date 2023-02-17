@@ -9,7 +9,7 @@ app.set('view engine', 'ejs')
 app.use(express.static(__dirname + '/public'))
 
 app.get('/', (req, res) => {
-    res.render("index.ejs",{title:"Index"})
+    res.render("index",{title:"Index"})
   })
 
 app.listen(PORT, function(err){
