@@ -7,6 +7,7 @@ var PORT = 3000;
 app.set("views", path.join(__dirname, "views"))
 app.set('view engine', 'ejs')
 app.use(express.static(__dirname + '/public'))
+app.use(express.urlencoded(extended=true))
 
 const accountData = fs.readFileSync(path.join(__dirname,"json","accounts.json"), "utf8")
 const accounts = JSON.parse(accountData)
@@ -31,6 +32,35 @@ app.get('/credit', (req, res) => {
 
 app.get('/profile', (req, res) => {
     res.render("profile",{user:users[0]})
+})
+
+app.get('/transfer', (req, res) => {
+    res.render("transfer")
+})
+
+app.post('/transfer', (req, res) => {
+    console.log("req.from")
+    let newBalanceFrom = accounts[req.from].balance - parseInt(req.ammount)
+    accounts[req.from].balance = newBalanceFrom
+    let newBalanceTo = accounts[req.to].balance + parseInt(req.ammount)
+    accounts[req.to].balance = newBalanceTo
+
+    let accountsJSON = JSON.stringify(accounts)
+    fs.writeFileSync(path.join(__dirname,"json","accounts.json"),accountsJSON,"utf8")
+    res.render("transfer",{message:"Transfer Completed"})
+})
+
+app.get('/payment', (req, res) => {
+    res.render("payment",{account: accounts.credit})
+})
+
+app.post('/payment', (req, res) => {
+    accounts.credit.balance = parseInt(accounts.credit.balance) - parseInt(req.body.amount)
+    accounts.credit.available = parseInt(req.body.amount) + parseInt(accounts.credit.available)
+
+    let accountsJSON = JSON.stringify(accounts)
+    fs.writeFileSync(path.join(__dirname,"json","accounts.json"),accountsJSON,"utf8")
+    res.render("payment",{message:"Payment Successful", account:accounts.credit})
 })
 
 app.listen(PORT, function(err){
