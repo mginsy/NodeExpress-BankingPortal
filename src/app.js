@@ -39,11 +39,10 @@ app.get('/transfer', (req, res) => {
 })
 
 app.post('/transfer', (req, res) => {
-    console.log("req.from")
-    let newBalanceFrom = accounts[req.from].balance - parseInt(req.ammount)
-    accounts[req.from].balance = newBalanceFrom
-    let newBalanceTo = accounts[req.to].balance + parseInt(req.ammount)
-    accounts[req.to].balance = newBalanceTo
+    let newBalanceFrom = accounts[req.body.from].balance - parseInt(req.body.amount)
+    accounts[req.body.from].balance = newBalanceFrom
+    let newBalanceTo = accounts[req.body.to].balance + parseInt(req.body.amount)
+    accounts[req.body.to].balance = newBalanceTo
 
     let accountsJSON = JSON.stringify(accounts)
     fs.writeFileSync(path.join(__dirname,"json","accounts.json"),accountsJSON,"utf8")
